@@ -3,7 +3,7 @@ const express = require('express');
 const compression = require('compression');
 const router = require('./routes');
 const connection = require('./database/connection');
-console.log(connection);
+// console.log(connection);
 
 const app = express();
 
