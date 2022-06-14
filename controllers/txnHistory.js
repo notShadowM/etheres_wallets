@@ -21,7 +21,7 @@ const txns = async (req,res) =>{
       data = await axios.get(`https://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=${jd}&address=${address}&page=1&offset=100&startblock=0&endblock=99999999&sort=desc&apikey=${process.env.HISTORY_API_KEY}`)
               .then(e => e.data);
     }else if(type === "ALL"){
-      data = Promise.all(
+      data = await Promise.all(
         [
           axios.get(`https://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=${nis}&address=${address}&page=1&offset=100&startblock=0&endblock=99999999&sort=desc&apikey=${process.env.HISTORY_API_KEY}`)
             .then(e => e.data),
