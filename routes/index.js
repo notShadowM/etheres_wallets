@@ -1,18 +1,27 @@
 const router = require("express").Router();
 const ABI = require("../controllers/ABIController");
 const Auth = require("../controllers/AuthController");
-const User = require("../models/User");
 const passport = require("../utils/passport");
-const transactions = require("../tempEthers");
+const transactions = require("../controllers/txnHistory");
+
+const Web3 = require('web3');
+const res = require("express/lib/response");
+
+let web3 = new Web3(new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`));
 
 
-router.post('/signup', Auth.signUp);
+// router.post('/signup', Auth.signUp);
 router.post('/login',Auth.login);
+
+router.use( passport.authenticate('jwt', { session: false }));
+
 router.get('/txns',transactions.txns);
 
-router.use(passport.authenticate('bearer', { session: false }));
+router.post('/exchange',ABI.exchangeCrypto);
 
-// router.post("/transaction",ABI.transaction);
+router.post("/transfer", ABI.transaction);
+
+router.get("/balance",ABI.balance);
 
 router.use((err, req, res, next) => {
   console.log(err)

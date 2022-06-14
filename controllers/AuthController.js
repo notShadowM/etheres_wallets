@@ -1,66 +1,20 @@
-const { hashSync, compareSync } = require('bcryptjs');
-const User = require('../models/User');
-const generateToken = require('../utils/tokenGen');
+const Web3 = require('web3');
+const jwt = require('jsonwebtoken');
 
-const signUp = async (req, res, next) => {
-  
-  const { userName, password, address } = req.body;
+let web3 = new Web3(new Web3.providers.HttpProvider(`https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`));
 
-  // validation
-
-  try{
-
-    const token = generateToken();
-
-    const hashedPassword = hashSync(password);
-
-    const user = await User.create({address, userName, password: hashedPassword, token});
-
-    res.json({
-      user:{
-        id: user._id,
-        userName: user.userName,
-        token: user.token
-      },
-      status: 200
-    });
-  }catch(err){
-    next(err);
-  }
-}
 
 const login = async (req, res, next) => {
   
-  const { userName, password } = req.body;
-
-  // validation
+  const { privateKey } = req.body;
 
   try{
+    const data = await web3.eth.accounts.privateKeyToAccount(privateKey);
+    const token = jwt.sign({address: data.address},process.env.JWT_SECRET);
 
-
-    const user = await User.findOne({userName});
-    if(!user){
-      throw new Error("user not found");
-    }
-
-    const passwordMatch = compareSync(password,user.password);
-
-    if(passwordMatch){
-      const token = generateToken();
-      user.token = token;
-      user.save();
-
-      res.json({
-        user:{
-          id: user._id,
-          userName: user.userName,
-          token: user.token
-        },
-        status: 200
-      });
-    }else{
-      throw new Error("invalid password");
-    }
+    res.json({
+      token
+    })
   }catch(err){
     next(err);
   }
@@ -68,6 +22,5 @@ const login = async (req, res, next) => {
 
 
 module.exports = {
-  signUp,
   login
 };
