@@ -15,7 +15,7 @@ router.post('/login',Auth.login);
 
 router.use( passport.authenticate('jwt', { session: false }));
 
-router.get('/txns',transactions.txns);
+router.post('/txns',transactions.txns);
 
 router.post('/exchange',ABI.exchangeCrypto);
 

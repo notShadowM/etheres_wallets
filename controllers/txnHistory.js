@@ -35,9 +35,12 @@ const txns = async (req,res) =>{
 
     // data = await axios.get(`https://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=0x5767A3dCE2CBB689B4B8ddA2b917D57b75b14e5c&address=0x3e97e2B3499aC801cEa29557af9a08082Ccf2080&page=1&offset=100&startblock=0&endblock=99999999&sort=desc&apikey=TVCHR8SPQB8KF5N2QEVXMWHNDXDC2QQ4HC`)
     //         .then(e => e.data);
-
+    const x = data[0].result;
+    const resData = x.map(e =>{
+      return (({ from, to,value,tokenSymbol }) => ({from, to,value,tokenSymbol}))(e)
+    });
     res.json({
-      status:data
+      status:resData
     })
   }catch(e){
     console.log(e)
